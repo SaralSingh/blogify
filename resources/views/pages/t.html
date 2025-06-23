@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blogify – Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            z-index: 1000;
+        }
+
+
+        .logo {
+            font-size: 1.8rem;
+            color: #333;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .header-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .header-btn.outline {
+            background-color: transparent;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+
+        .header-btn.outline:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .posts-container {
+            max-width: 1200px;
+            margin: 120px auto 40px;
+            /* Top margin increased for space under header */
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .post-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .post-card a.stretched-link {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        .post-id {
+            font-size: 0.85rem;
+            color: #007bff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .post-title {
+            font-size: 1.4rem;
+            color: #007bff;
+            margin: 5px 0;
+        }
+
+        .post-description {
+            font-size: 1rem;
+            color: #444;
+            margin: 10px 0 15px;
+            line-height: 1.5;
+        }
+
+        .author-info {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .author-info span {
+            display: block;
+        }
+
+        @media screen and (max-width: 600px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .post-title {
+                font-size: 1.2rem;
+                color: #007bff;
+            }
+        }
+
+        .post-card .d-flex div {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1 class="logo">Blogify</h1>
+        <div class="header-buttons align-items-center gap-3 flex-wrap">
+            <input type="text" id="searchInput" placeholder="Search..." class="form-control"
+                style="max-width: 200px; padding: 6px 10px; font-size: 14px;" />
+            @if (Auth::check())
+                <a href="{{ route('dashboard.page') }}" class="header-btn">Dashboard</a>
+            @else
+                <a href="{{ route('login.page') }}" class="header-btn">Login</a>
+                <a href="{{ route('register.page') }}" class="header-btn outline">Register</a>
+            @endif
+        </div>
+
+    </header>
+
+    <!-- ✅ Toast -->
+    <div class="position-fixed top-0 end-0 p-3" style="top: 1rem; left: 1rem; z-index: 1055">
+        <div id="newPostToast" class="toast bg-primary text-white" role="alert" aria-live="assertive"
+            aria-atomic="true" style="cursor: pointer;">
+            <div class="toast-header bg-primary text-white">
+                <strong class="me-auto">New Post 🚀</strong>
+                <button type="button" class="btn-close btn-close-white ms-2 mb-1" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastContent"></div>
+        </div>
+    </div>
+
+
+    <div class="posts-container" id="body">
+        <!-- Posts will be injected here -->
+    </div>
+
+    <!-- ✅ Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let latestPostId = 0;
+        let allPosts = [];
+        let currentToastPostId = null;
+        // let url = 'https://6324-103-77-2-8.ngrok-free.app';
+        let url = 'http://127.0.0.1:8000';
+
+        function showToast(title, author, postId) {
+            const content = `"${title}" by ${author}`;
+            document.getElementById('toastContent').innerText = content;
+            currentToastPostId = postId;
+
+            const toastEl = document.getElementById('newPostToast');
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 2000
+            });
+            toast.show();
+        }
+
+        document.getElementById('newPostToast').addEventListener('click', function(e) {
+            if (!e.target.classList.contains('btn-close') && currentToastPostId) {
+                window.location.href = `/post/${currentToastPostId}`;
+            }
+        });
+
+        function renderPosts(posts) {
+            const container = document.getElementById('body');
+            container.innerHTML = '';
+
+            posts.forEach(post => {
+                const fullDesc = post.description || '';
+                const showMore = fullDesc.length > 100;
+                const shortDesc = showMore ? fullDesc.substring(0, 100) + '...' : fullDesc;
+                console.log('Created At:', post.created_at);
+
+                // 🗓️ Format the date
+                const postDate = new Date(post.created_at.slice(0, 19));
+                const formattedDate = postDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const card = `
+    <div class="post-card position-relative" style="cursor: pointer;">
+        <a href="/post/${post.id}" class="stretched-link"></a>
+        <div class="post-title">${post.title}</div>
+        <div class="post-description">${shortDesc}</div>
+        <div class="author-info">
+            <span><strong>Author:</strong> ${post.user.name}</span>
+            <span><strong>Username:</strong> @${post.user.username}</span>
+            <span><strong>🗓️ Posted:</strong> ${formattedDate}</span>
+        </div>
+        <div class="d-flex gap-3 mt-3" style="font-weight:600; font-size: 0.95rem;">
+            <div>👍 <span>${post.likes}</span></div>
+            <div>👎 <span>${post.dislikes}</span></div>
+        </div>
+    </div>`;
+                container.innerHTML += card;
+            });
+        }
+
+        // ✅ Initial Load - fetch & store latestPostId
+        function fetchInitialPosts() {
+            fetch(`${url}/api/public/posts`)
+                .then(res => res.json())
+                .then(data => {
+                    allPosts = data.data.posts;
+                    if (allPosts.length) {
+                        latestPostId = allPosts[0].id;
+                        renderPosts(allPosts);
+                    }
+                })
+                .catch(err => console.error('Initial fetch error:', err));
+        }
+
+        // 🔁 Every 10s: Check new post, toast if found, update only latestPostId
+        function checkForNewPost() {
+            fetch(`${url}/api/public/posts`)
+                .then(res => res.json())
+                .then(data => {
+                    const newPosts = data.data.posts;
+
+                    if (newPosts.length && newPosts[0].id > latestPostId) {
+                        // Update allPosts so search stays in sync with latest results
+                        allPosts = newPosts;
+
+                        showToast(newPosts[0].title, newPosts[0].user.name, newPosts[0].id);
+                        latestPostId = newPosts[0].id;
+                    }
+                })
+                .catch(err => console.error('Toast check error:', err));
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const term = this.value.toLowerCase();
+
+            const filtered = allPosts.filter(p => {
+                if (term.startsWith('@')) {
+                    const usernameTerm = term.slice(1);
+                    return p.user.username.toLowerCase().includes(usernameTerm);
+                }
+
+                return (
+                    p.title.toLowerCase().includes(term) ||
+                    (p.description || '').toLowerCase().includes(term)
+                );
+            });
+
+            if (filtered.length === 0) {
+                document.getElementById('body').innerHTML = `
+      <div style="text-align: center; color: #666; font-size: 18px; margin-top: 30px;">
+        🔍 Not found
+      </div>
+    `;
+            } else {
+                renderPosts(filtered);
+            }
+        });
+
+
+        fetchInitialPosts(); // Load & display posts
+        setInterval(checkForNewPost, 10000); // Check only for toast update
+    </script>
+
+</body>
+
+</html>

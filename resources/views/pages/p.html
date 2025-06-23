@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini AI Example</title>
+</head>
+<body>
+  <h1>Ask Gemini AI</h1>
+<textarea id="userInput" placeholder="Enter your message..."></textarea>
+<button onclick="classifyMessage()">Check Message</button>
+<pre id="responseBox"></pre>
+
+<script>
+  async function classifyMessage() {
+    const apiKey = 'AIzaSyCbaTemk5HIbwsCZ6eaj2SWXLuz-h-U1iY'; // Replace this
+    const userText = document.getElementById('userInput').value;
+
+    const prompt = `Classify the following message as 'good' or 'bad':\n\nMessage: ${userText}`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: prompt }]
+          }
+        ]
+      })
+    });
+
+    const data = await response.json();
+    console.log("Full API Response:", data);
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text?.toLowerCase() || '';
+
+    // Simple logic to decide based on AI response
+    let decision = '';
+    if (reply.includes('good')) {
+      decision = '✅ This message is GOOD.';
+    } else if (reply.includes('bad')) {
+      decision = '❌ This message is BAD.';
+    } else {
+      decision = '🤔 Unable to classify.';
+    }
+
+    document.getElementById('responseBox').textContent = decision + "\n\n(Gemini said: " + reply + ")";
+  }
+</script>
+</body>
+</html>
