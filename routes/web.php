@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
 Route::get('/run-artisan/{cmd}', function ($cmd) {
-    $allowed = [
-        'migrate' => 'migrate --force',
-        'config-cache' => 'config:cache',
-        'optimize-clear' => 'optimize:clear',
-        'storage-link' => 'storage:link',
-        'db-seed' => 'db:seed --force',
-    ];
+$allowed = [
+    'migrate' => 'migrate --force',
+    'migrate-fresh' => 'migrate:fresh --force', // 👈 Add this line
+    'config-cache' => 'config:cache',
+    'optimize-clear' => 'optimize:clear',
+    'storage-link' => 'storage:link',
+    'db-seed' => 'db:seed --force',
+];
 
     if (!array_key_exists($cmd, $allowed)) {
         abort(403, 'Command not allowed.');

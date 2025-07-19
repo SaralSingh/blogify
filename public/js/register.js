@@ -5,7 +5,7 @@ document.getElementById('get-otp').addEventListener('click', function () {
         return;
     }
     // const url = "http://127.0.0.1:8000";
-    const url = "https://full-drake-sound.ngrok-free.app";
+    const url = "https://blogify-912d.onrender.com";
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     fetch(`${url}/otp`, {
         method: 'POST',
