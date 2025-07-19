@@ -21,71 +21,6 @@
             color: #1f2a44;
         }
 
-        /* Top Navigation */
-        .navbar {
-            background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 1100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #00d1b2;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #d1d5db;
-            text-decoration: none;
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            background: #00d1b2;
-            color: #1f2a44;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: #00d1b2;
-            border: none;
-            padding: 0.5rem;
-            border-radius: 8px;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        /* Search Bar */
-        .search-bar {
-            flex: 1;
-            /* Allow search bar to take available space */
-            max-width: 300px;
-            /* Limit width for balance */
-            margin-left: 1rem;
-            /* Space from nav links */
-        }
-
         #searchInput {
             width: 100%;
             padding: 0.5rem 1rem;
@@ -105,64 +40,6 @@
 
         #searchInput::placeholder {
             color: #6b7280;
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(90deg, #00d1b2, #007bff);
-            color: white;
-            padding: 4rem 2rem;
-            border-radius: 16px;
-            text-align: left;
-            margin-bottom: 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: slideIn 1s ease-out;
-        }
-
-        .hero-text {
-            max-width: 50%;
-        }
-
-        .hero-text h1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .hero-text p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-text .cta-btn {
-            background: #1f2a44;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .hero-text .cta-btn:hover {
-            background: #2c3e50;
-            transform: translateY(-2px);
-        }
-
-        .hero-image img {
-            max-width: 300px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
         /* Posts Container */
@@ -286,29 +163,29 @@
             background: white;
         }
 
-/* Remove unwanted box and spacing around the input */
-.search-wrapper {
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
+        /* Remove unwanted box and spacing around the input */
+        .search-wrapper {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+        }
 
-/* Clean rounded input */
-.custom-search {
-    border: none !important;
-    border-radius: 50px !important;
-    padding: 0.6rem 1.2rem !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    font-size: 1rem !important;
-    background: white;
-}
+        /* Clean rounded input */
+        .custom-search {
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 0.6rem 1.2rem !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            font-size: 1rem !important;
+            background: white;
+        }
 
-.custom-search:focus {
-    outline: none !important;
-    box-shadow: 0 0 0 3px rgba(0, 209, 178, 0.2) !important;
-}
+        .custom-search:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(0, 209, 178, 0.2) !important;
+        }
 
 
 
@@ -458,27 +335,14 @@
     @section('title', 'Home Page')
 
     @section('content')
-        @guest
-            <div class="hero-section">
-                <div class="hero-text">
-                    <h1>Share Your Story</h1>
-                    <p>Join our community of writers and readers to explore diverse perspectives and ideas.</p>
-                    <a href="{{ route('register.page') }}" class="cta-btn">Get Started</a>
-                </div>
-                <div class="hero-image">
-                    <img src="https://picsum.photos/seed/hero/600/400" alt="Hero image">
-                </div>
-            </div>
-        @endguest
-
         {{-- Search Bar --}}
-{{-- Search Bar --}}
-<div class="search-wrapper mb-4"
-     style="position: sticky; top: 0; z-index: 1000; background: #f5f7fa; padding-bottom: 15px;">
-    <input type="text" id="searchInput"
-        class="form-control custom-search shadow-sm"
-        placeholder="🔍 Search posts by title or @username..." onkeyup="filterPosts()">
-</div>
+        {{-- Search Bar --}}
+        <div class="search-wrapper mb-4"
+            style="position: sticky; top: 0; z-index: 1000; background: #f5f7fa; padding-bottom: 15px;">
+            <input type="text" id="searchInput" class="form-control custom-search shadow-sm"
+                placeholder="🔍 Search posts by title or @username..." onkeyup="handleSearchInput()">
+        </div>
+
 
 
         {{-- Posts Section --}}
@@ -510,15 +374,6 @@
             </div>
         </div>
 
-        {{-- Footer
-        <footer>
-            <p>© 2025 Blogify. Crafted with ❤️.
-                <a href="/about">About</a> |
-                <a href="/contact">Contact</a> |
-                <a href="/privacy">Privacy Policy</a> |
-                <a href="/terms">Terms of Service</a>
-            </p>
-        </footer> --}}
     @endsection
 
     @push('scripts')
@@ -526,8 +381,8 @@
             let latestPostId = 0;
             let allPosts = [];
             let currentToastPostId = null;
-            let url = '{{ url('/') }}';
-            // let url = 'https://cf40-103-77-2-8.ngrok-free.app';
+            let url = 'https://full-drake-sound.ngrok-free.app';
+            // let url = 'http://127.0.0.1::8000';
 
             function showToast(title, author, postId) {
                 const content = `"${title}" by ${author}`;
@@ -571,50 +426,90 @@
                         month: 'long',
                         day: 'numeric'
                     });
+                    let imageUrl = post.picture ? `/storage/${post.picture}` :
+                        `/storage/images/posts/post-placeholder.jpg`;
 
                     container.innerHTML += `
-            <div class="post-card position-relative">
-                <a href="/post/${post.id}" class="stretched-link"></a>
-                <img src="https://picsum.photos/seed/${post.id}/600/400" alt="Post image" class="post-image">
-                <div class="post-content">
-                    <div class="post-title">${post.title}</div>
-                    <div class="post-description">${shortDesc}</div>
-                    <div class="author-info">
-                        <span><strong>Author:</strong> ${post.user.name}</span>
-                        <span><strong>Username:</strong> @${post.user.username}</span>
-                        <span><strong>🗓️ Posted:</strong> ${formattedDate}</span>
+                <div class="post-card position-relative">
+                    <a href="/post/${post.id}" class="stretched-link"></a>
+                    <img src="${imageUrl}" alt="Post image" class="post-image">
+                    <div class="post-content">
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-description">${shortDesc}</div>
+                        <div class="author-info">
+                            <span><strong>Author:</strong> ${post.user.name}</span>
+                            <span><strong>Username:</strong> @${post.user.username}</span>
+                            <span><strong>🗓️ Posted:</strong> ${formattedDate}</span>
+                        </div>
+                        <div class="post-stats">
+                            <div><i class="fas fa-thumbs-up"></i> ${post.likes}</div>
+                            <div><i class="fas fa-thumbs-down"></i> ${post.dislikes}</div>
+                        </div>
                     </div>
-                    <div class="post-stats">
-                        <div><i class="fas fa-thumbs-up"></i> ${post.likes}</div>
-                        <div><i class="fas fa-thumbs-down"></i> ${post.dislikes}</div>
-                    </div>
-                </div>
-            </div>`;
+                </div>`;
                 });
             }
 
-            function filterPosts() {
-                const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let debounceTimer;
 
-                let filtered = [];
+            function handleSearchInput() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const query = document.getElementById('searchInput').value.toLowerCase().trim();
 
-                let isUserSearch = false;
-
-                if (query.startsWith('@')) {
-                    isUserSearch = true;
-                    const usernameQuery = query.slice(1); // remove '@'
-                    filtered = allPosts.filter(post => post.user.username.toLowerCase().includes(usernameQuery));
-                } else {
-                    filtered = allPosts.filter(post =>
-                        post.title.toLowerCase().includes(query) ||
-                        post.user.name.toLowerCase().includes(query)
-                    );
-                }
-
-                renderPosts(filtered, isUserSearch);
+                    if (query.startsWith('@')) {
+                        const username = query.slice(1); // remove '@'
+                        filterUsersByUsername(username);
+                    } else {
+                        filterPostsByTitleOrAuthor(query);
+                    }
+                }, 300); // Debounce delay (ms)
             }
 
 
+            function filterUsersByUsername(username) {
+                const container = document.getElementById('body');
+                const noUserFound = document.getElementById('noUserFound');
+                const noResults = document.getElementById('noResults');
+
+                container.innerHTML = '';
+                noUserFound.style.display = 'none';
+                noResults.style.display = 'none';
+
+                fetch(`${url}/api/all-users`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const seen = new Set();
+                        const filteredUsers = data.users.filter(user =>
+                            user.username.toLowerCase().includes(username) && !seen.has(user.id) && seen.add(user.id)
+                        );
+
+                        if (!filteredUsers.length) {
+                            noUserFound.style.display = 'block';
+                            return;
+                        }
+
+                        filteredUsers.forEach(user => {
+                            container.innerHTML += `
+                    <div class="post-card" onclick="window.location.href='/user/profile/${user.id}'" style="cursor: pointer;">
+                        <div class="post-content">
+                            <div class="post-title">@${user.username}</div>
+                            <div class="post-description">Name: ${user.name}</div>
+                            <div class="author-info">Email: ${user.email}</div>
+                        </div>
+                    </div>`;
+                        });
+                    })
+                    .catch(err => console.error('User fetch failed:', err));
+            }
+
+            function filterPostsByTitleOrAuthor(query) {
+                const filtered = allPosts.filter(post =>
+                    post.title.toLowerCase().includes(query) ||
+                    post.user.name.toLowerCase().includes(query)
+                );
+                renderPosts(filtered, false);
+            }
 
             function fetchInitialPosts() {
                 fetch(`${url}/api/public/posts`)
@@ -642,7 +537,6 @@
                     })
                     .catch(err => console.error('Toast check error:', err));
             }
-
 
             fetchInitialPosts();
             setInterval(checkForNewPost, 10000);

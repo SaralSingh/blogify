@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API\private;
 
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\PostReaction;
+use App\Notifications\UserActionNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +21,12 @@ class PostReactionController extends Controller
     // Handle like/dislike reaction
     public function react(Request $request, $post_id)
     {
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => false
+            ]);
+        }
+
         $reaction = $request->validate([
             'reaction' => 'required|in:0,1'
         ]);
@@ -34,6 +42,15 @@ class PostReactionController extends Controller
                 'reaction' => $reaction['reaction']
             ]
         );
+
+        // Notify post owner if liked and not self
+        $post = Post::findOrFail($post_id);
+        if ($post->user_id !== $user_id && $reaction['reaction'] == 1) {
+            $post->user->notify(new UserActionNotification([
+                'message' => Auth::user()->name . ' liked your post.',
+                'url' => route('post.page', $post->id),
+            ]));
+        }
 
         if ($status) {
             return response()->json([
@@ -80,27 +97,43 @@ class PostReactionController extends Controller
     */
 
     // Save a comment to a post
-  public function saveComment(Request $request)
-{
-    $validated = $request->validate([
-        'post_id'   => 'required|exists:posts,id',
-        'comment'   => 'required|string|min:1|max:1000',
-        'parent_id' => 'nullable|exists:post_comments,id' // ✅ allow replies
-    ]);
+    public function saveComment(Request $request)
+    {
 
-    $comment = new PostComment();
-    $comment->user_id   = Auth::id();
-    $comment->post_id   = $validated['post_id'];
-    $comment->comment   = $validated['comment'];
-    $comment->parent_id = $validated['parent_id'] ?? null; // ✅ set if reply
-    $comment->save();
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => false
+            ]);
+        }
 
-    return response()->json([
-        'status'  => true,
-        'message' => 'Comment added successfully',
-        'data'    => $comment
-    ], 201);
-}
+        $validated = $request->validate([
+            'post_id'   => 'required|exists:posts,id',
+            'comment'   => 'required|string|min:1|max:1000',
+            'parent_id' => 'nullable|exists:post_comments,id' // ✅ allow replies
+        ]);
+
+        $comment = new PostComment();
+        $comment->user_id   = Auth::id();
+        $comment->post_id   = $validated['post_id'];
+        $comment->comment   = $validated['comment'];
+        $comment->parent_id = $validated['parent_id'] ?? null; // ✅ set if reply
+        $comment->save();
+
+        // ✅ Notify post owner (only if commenter is not the owner)
+        $post = Post::findOrFail($validated['post_id']);
+        if ($post->user_id !== Auth::id()) {
+            $post->user->notify(new UserActionNotification([
+                'message' => Auth::user()->name . ' commented on your post.',
+                'url'     => route('post.page', $post->id),
+            ]));
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Comment added successfully',
+            'data'    => $comment
+        ], 201);
+    }
     // Delete comment if the user is the owner
     public function deleteComment($id)
     {

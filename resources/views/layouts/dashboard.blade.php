@@ -4,220 +4,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Blogify – Dashboard')</title>
+    <title>@yield('title', 'Blogify')</title>
 
-    <!-- Google Fonts + Bootstrap + Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #1f1f1f;
+            --border-color: #2a2a2a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #6b7280;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
         }
 
         body {
+            margin: 0;
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
         }
 
-        /* Header Styles */
         header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0 2rem;
+            background: var(--bg-secondary);
             height: 70px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--accent-color);
         }
 
-        .header-right {
+        .nav-actions {
             display: flex;
-            align-items: center;
             gap: 1rem;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
+        .btn {
+            padding: 0.5rem 1.1rem;
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-
-        /* Mobile Menu Toggle */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
             border: none;
-            font-size: 1.5rem;
-            color: #333;
-            cursor: pointer;
         }
 
-        /* Dashboard Container */
-        .dashboard-container {
+        .btn-signin {
+            background: transparent;
+            border: 1px solid #333;
+            color: var(--text-primary);
+        }
+
+        .btn-signin:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .layout {
             display: flex;
             height: calc(100vh - 70px);
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem;
-            gap: 1rem;
         }
 
-        /* Sidebar Styles */
         .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            overflow-y: auto;
-        }
-
-        .sidebar h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            color: #333;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f0f0f0;
+            width: 250px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .sidebar a {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            color: #666;
+            gap: 10px;
+            color: var(--text-secondary);
             text-decoration: none;
-            margin-bottom: 0.5rem;
             font-weight: 500;
-            padding: 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
-
-        .sidebar a:hover::before,
-        .sidebar a.active::before {
-            left: 0;
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.2s;
         }
 
         .sidebar a:hover,
         .sidebar a.active {
+            background: var(--accent-color);
             color: white;
-            transform: translateX(5px);
         }
 
-        .nav-icon {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
+        .main {
             flex: 1;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
             overflow-y: auto;
+            background: var(--bg-primary);
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
 
-            .dashboard-container {
-                flex-direction: column;
-                padding: 0.5rem;
+        .sidebar-close {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            align-self: flex-end;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
             }
 
             .sidebar {
                 position: fixed;
                 top: 70px;
-                left: -100%;
-                height: calc(100vh - 70px);
-                z-index: 999;
-                transition: left 0.3s ease;
-                width: 280px;
-            }
-
-            .sidebar.active {
                 left: 0;
+                width: 100%;
+                height: calc(100% - 70px);
+                background: var(--bg-secondary);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
             }
 
-            .header {
-                padding: 0 1rem;
+            .sidebar.show {
+                transform: translateX(0);
             }
 
-            .user-info {
-                display: none;
+            .sidebar-close {
+                display: block;
+                margin-bottom: 1rem;
             }
 
-            .main-content {
-                margin-top: 0;
+            .layout {
+                flex-direction: column;
+            }
+
+            .main {
                 padding: 1rem;
             }
         }
@@ -226,107 +182,68 @@
 
 <body>
 
-@auth
-    <!-- Header -->
     <header>
         <div class="logo">Blogify</div>
-        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-right">
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <span>Welcome, {{ Auth::user()->name }}</span>
-            </div>
-            <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: inline;">
-                @csrf
-                <button class="logout-btn" type="submit">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </button>
-            </form>
-        </div>
+                        <div class="flex items-center gap-3 mb-6">
+                    <div>
+                        <p class="font-semibold text-white text-sm">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-gray-400">welcome back!</p>
+                    </div>
+                </div>
+        @auth
+            <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+        @endauth
     </header>
 
-    <!-- Sidebar + Main Content -->
-    <div class="dashboard-container">
-        <aside class="sidebar" id="sidebar">
-            <h3>
-                <i class="fas fa-user-circle"></i>
-                Welcome, {{ Auth::user()->name }}
-            </h3>
+    <div class="layout">
+        @auth
+            <aside class="sidebar" id="sidebar">
 
-            <a href="{{ route('home.page') }}" class="{{ Request::is('/') ? 'active' : '' }}">
-                <i class="fas fa-home nav-icon"></i>
-                <span>Home</span>
-            </a>
-            <a href="{{ route('dashboard.page') }}" class="{{ Request::is('user/account/posts') ? 'active' : '' }}">
-                <i class="fas fa-file-alt nav-icon"></i>
-                <span>My Posts</span>
-            </a>
-            <a href="{{ route('post.add.page') }}" class="{{ Request::is('user/account/create/post') ? 'active' : '' }}">
-                <i class="fas fa-plus-circle nav-icon"></i>
-                <span>Create Post</span>
-            </a>
-            <a href="#profile">
-                <i class="fas fa-user nav-icon"></i>
-                <span>Profile</span>
-            </a>
-        </aside>
 
-        <main class="main-content">
+                <button class="sidebar-close" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <a href="{{ route('home.page') }}" class="{{ request()->is('/') ? 'active' : '' }}">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="{{ route('notifications.page') }}"
+                    class="{{ request()->is('user/account/notifications') ? 'active' : '' }}">
+                    <i class="fas fa-bell"></i> Notifications
+                    @if (Auth::user()->unreadNotifications->count() > 0)
+                        <span
+                            style="background: red; color: white; font-size: 0.75rem; padding: 2px 6px; border-radius: 10px; margin-left: auto;">
+                            {{ Auth::user()->unreadNotifications->count() }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ route('dashboard.page') }}" class="{{ request()->is('user/account/posts') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i> My Posts
+                </a>
+                <a href="{{ route('post.add.page') }}"
+                    class="{{ request()->is('user/account/create/post') ? 'active' : '' }}">
+                    <i class="fas fa-plus-circle"></i> Create Post
+                </a>
+                <a href="{{ route('profile.page') }}" class="{{ request()->is('user/account/profile') ? 'active' : '' }}">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+            </aside>
+        @endauth
+
+        <main class="main">
             @yield('content')
         </main>
     </div>
-@endauth
 
-@stack('scripts')
-
-<script>
-    // Mobile menu toggle
-    function toggleMobileMenu() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('active');
-    }
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.querySelector('.mobile-menu-toggle');
-        
-        if (window.innerWidth <= 768 && 
-            !sidebar.contains(e.target) && 
-            !toggleBtn.contains(e.target) && 
-            sidebar.classList.contains('active')) {
-            sidebar.classList.remove('active');
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
         }
-    });
+    </script>
 
-    // Handle window resize
-    window.addEventListener('resize', function() {
-        const sidebar = document.getElementById('sidebar');
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('active');
-        }
-    });
-
-    // Enhanced logout functionality
-    const logoutForm = document.getElementById('logout-form');
-    if (logoutForm) {
-        logoutForm.addEventListener('submit', function (e) {
-            // Optional: Add confirmation dialog
-            if (!confirm('Are you sure you want to logout?')) {
-                e.preventDefault();
-                return false;
-            }
-            
-            // Clear local storage
-            localStorage.removeItem('token');
-            sessionStorage.clear();
-        });
-    }
-</script>
-
+    @stack('scripts')
 </body>
 
 </html>

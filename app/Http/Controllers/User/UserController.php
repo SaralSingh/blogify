@@ -6,25 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\PostReaction;
+use App\Notifications\UserActionNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class UserController extends Controller
 {
 
-public function dashboardPage()
-{
-    $posts = Post::where('user_id', Auth::id())->latest()->get();
+    public function dashboardPage()
+    {
+        $posts = Post::where('user_id', Auth::id())->latest()->get();
 
-    // Add likes and dislikes count manually
-    foreach ($posts as $post) {
-        $post->likes = PostReaction::where('post_id', $post->id)->where('reaction', 1)->count();
-        $post->dislikes = PostReaction::where('post_id', $post->id)->where('reaction', 0)->count();
-        $post->comments = PostComment::where('post_id',$post->id)->count();
+        // Add likes and dislikes count manually
+        foreach ($posts as $post) {
+            $post->likes = PostReaction::where('post_id', $post->id)->where('reaction', 1)->count();
+            $post->dislikes = PostReaction::where('post_id', $post->id)->where('reaction', 0)->count();
+            $post->comments = PostComment::where('post_id', $post->id)->count();
+        }
+
+        return view('User.dashboard', ['posts' => $posts]);
     }
-
-    return view('User.dashboard', ['posts' => $posts]);
-}
 
     public function postView(string $id)
     {
@@ -40,25 +44,63 @@ public function dashboardPage()
 
     public function postStore(Request $request)
     {
-        // Step 1: Validation
+        // Step 1: Validate basic inputs
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240' // 2MB max
         ]);
 
-        // Step 2: Create the post for the logged-in user
+        $path = null;
+
+        // Step 2: Handle image upload if it exists
+        if ($request->hasFile('image')) {
+            $userName = Auth::user()->username;
+            $image = $request->file('image');
+            $filename = uniqid() . '.webp'; // Always convert to webp
+            $folder = "images/posts/{$userName}";
+
+            // Compress and resize (convert to WebP at 70% quality)
+            $compressedImage = Image::make($image)
+                ->resize(1000, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize(); // Don't upscale small images
+                })
+                ->encode('webp', 70); // WebP format
+
+            // Save to public storage
+            Storage::disk('public')->put("{$folder}/{$filename}", $compressedImage);
+
+            $path = "{$folder}/{$filename}";
+        }
+
+        // Step 3: Create the post
         Post::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'user_id' => Auth::id(), // Logged-in user
+            'user_id' => Auth::id(),
+            'picture' => $path, // Can be null
         ]);
 
-        // Step 3: Redirect to dashboard with success message
+        // Notify followers
+        $user = Auth::user();
+        $post = Post::latest()->where('user_id', $user->id)->first(); // Just created post
+
+        foreach ($user->followers as $follower) {
+            $follower->notify(new UserActionNotification([
+                'message' => "{$user->name} posted: {$validated['title']}",
+                'url' => route('post.page', $post->id)
+            ]));
+        }
+        // Step 4: Redirect
         return redirect()->route('dashboard.page')->with('success', 'Post created successfully!');
     }
 
+
+
     public function postEditPage(string $id)
     {
+        Gate::authorize('view-post', $id);
         $post = Post::where('user_id', Auth::id())->findorFail($id);
         return view('User.editPost', ['post' => $post]);
     }
@@ -70,17 +112,16 @@ public function dashboardPage()
             'description' => 'required|string',
         ]);
 
-      $status = Post::where('user_id',Auth::id())->findorFail($request->post_id)->update(
-        [
-            'title'=>$validated['title'],
-            'description'=>$validated['description']
-        ]
-      );
+        $status = Post::where('user_id', Auth::id())->findorFail($request->post_id)->update(
+            [
+                'title' => $validated['title'],
+                'description' => $validated['description']
+            ]
+        );
 
-      if($status)
-      {
-        return redirect()->route('dashboard.page')->with('success', 'Post updated successfully.');
-      }
+        if ($status) {
+            return redirect()->route('dashboard.page')->with('success', 'Post updated successfully.');
+        }
     }
 
     public function deletePost(string $id)
@@ -90,15 +131,41 @@ public function dashboardPage()
         return redirect()->route('dashboard.page')->with('success', 'Post deleted successfully.');
     }
 
-public function viewComment($id)
-{
-    // Get the post (optional, for title/details)
-    $post = Post::findOrFail($id);
+    public function viewComment($id)
+    {
+        Gate::authorize('view-post', $id);
+        // ✅ Get the post details
+        $post = Post::findOrFail($id);
 
-    // Get all comments related to this post, with user name
-    $comments = PostComment::where('post_id', $id)->with('user')->latest()->get();
+        $comments = PostComment::where('post_id', $id)
+            ->whereNull('parent_id')
+            ->with(['user', 'repliesRecursive'])
+            ->latest()
+            ->get();
 
-    // Send both post and comments to the view
-    return view('User.commentView', compact('post', 'comments'));
-}
+        // ✅ Send data to the view
+        return view('User.commentView', compact('post', 'comments'));
+    }
+
+    public function deleteComment($id)
+    {
+        $comment = PostComment::find($id);
+
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Comment not found.');
+        }
+
+        if ($comment->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
+        }
+
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
+    }
+
+    public function profilePage()
+    {
+        return view('User.profile');
+    }
 }

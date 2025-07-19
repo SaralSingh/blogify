@@ -39,5 +39,11 @@ class PostComment extends Model
     {
         return $this->belongsTo(PostComment::class, 'parent_id');
     }
+
+    public function repliesRecursive()
+{
+    return $this->hasMany(PostComment::class, 'parent_id')
+        ->with(['user', 'repliesRecursive']); // 👈 recursive chain
+}
 }
 

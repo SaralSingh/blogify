@@ -1,52 +1,82 @@
 [
   {
-    "id": 1,
     "name": "Saral Singh",
-    "username": "saral123",
+    "username": "sarals",
     "email": "saral@example.com",
-    "password": "123456",
+    "password": "hashed_password_1",
     "role": "user",
-    "created_at": "2025-06-18 10:00:00",
-    "updated_at": "2025-06-18 10:00:00"
+    "avatar": "images/avatars/saral.jpg"
   },
   {
-    "id": 2,
-    "name": "Anjali Mehra",
-    "username": "anjali_m",
-    "email": "anjali@example.com",
-    "password": "password123",
-    "role": "admin",
-    "created_at": "2025-06-17 09:30:00",
-    "updated_at": "2025-06-17 09:30:00"
+    "name": "Aman Gupta",
+    "username": "aman123",
+    "email": "aman@example.com",
+    "password": "hashed_password_2",
+    "role": "user",
+    "avatar": "images/avatars/aman.jpg"
   },
   {
-    "id": 3,
+    "name": "Neha Sharma",
+    "username": "neha_01",
+    "email": "neha@example.com",
+    "password": "hashed_password_3",
+    "role": "user",
+    "avatar": "images/avatars/neha.jpg"
+  },
+  {
     "name": "Ravi Kumar",
     "username": "ravi_k",
     "email": "ravi@example.com",
-    "password": "ravi@321",
+    "password": "hashed_password_4",
     "role": "user",
-    "created_at": "2025-06-16 11:15:00",
-    "updated_at": "2025-06-16 11:15:00"
+    "avatar": null
   },
   {
-    "id": 4,
-    "name": "Pooja Sharma",
-    "username": "pooja_s",
-    "email": "pooja@example.com",
-    "password": "pooja2025",
-    "role": "user",
-    "created_at": "2025-06-15 08:45:00",
-    "updated_at": "2025-06-15 08:45:00"
+    "name": "Priya Verma",
+    "username": "priya_v",
+    "email": "priya@example.com",
+    "password": "hashed_password_5",
+    "role": "admin",
+    "avatar": "images/avatars/priya.png"
   },
   {
-    "id": 5,
-    "name": "Aman Verma",
-    "username": "amanv",
-    "email": "aman@example.com",
-    "password": "aman@pass",
+    "name": "Aditya Mehra",
+    "username": "aditya",
+    "email": "aditya@example.com",
+    "password": "hashed_password_6",
     "role": "user",
-    "created_at": "2025-06-14 07:20:00",
-    "updated_at": "2025-06-14 07:20:00"
+    "avatar": null
+  },
+  {
+    "name": "Sneha Kapoor",
+    "username": "sneha_k",
+    "email": "sneha@example.com",
+    "password": "hashed_password_7",
+    "role": "user",
+    "avatar": "images/avatars/sneha.jpg"
+  },
+  {
+    "name": "Rahul Dev",
+    "username": "rahul_d",
+    "email": "rahul@example.com",
+    "password": "hashed_password_8",
+    "role": "user",
+    "avatar": "images/avatars/rahul.jpg"
+  },
+  {
+    "name": "Kriti Sen",
+    "username": "kriti_s",
+    "email": "kriti@example.com",
+    "password": "hashed_password_9",
+    "role": "user",
+    "avatar": null
+  },
+  {
+    "name": "Yash Thakur",
+    "username": "yash_t",
+    "email": "yash@example.com",
+    "password": "hashed_password_10",
+    "role": "user",
+    "avatar": "images/avatars/yash.png"
   }
 ]

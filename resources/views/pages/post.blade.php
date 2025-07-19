@@ -39,6 +39,22 @@
             line-height: 1.3;
         }
 
+        /* Post Content */
+        .post-image {
+            margin: 2rem 0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
         .author-box {
             display: flex;
             justify-content: space-between;
@@ -340,8 +356,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive Design */
@@ -434,6 +455,41 @@
                 font-size: 0.9rem;
             }
         }
+
+        .author-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .author-link:hover {
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+
+        .author-link .author-name {
+            font-weight: bold;
+            color: #333;
+            transition: color 0.2s ease;
+        }
+
+        .author-link:hover .author-name {
+            color: #007bff;
+            /* blue on hover */
+            text-decoration: underline;
+        }
+
+        .author-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 20%;
+            object-fit: cover;
+        }
     </style>
 </head>
 
@@ -446,19 +502,26 @@
         <!-- Post Title -->
         <h1 class="post-title">{{ $post->title }}</h1>
 
-        <!-- Author Info -->
         <div class="author-box">
-            <div class="author-info">
-                <img src="https://avatar.vercel.sh/{{ urlencode($post->user->name) }}.svg" alt="Avatar">
+            <a href="{{ route('user.page', ['id' => $post->user->id]) }}" class="author-link">
+                <img src="{{ asset('storage/' . $post->user->avatar) }}" alt="Avatar" class="author-avatar">
                 <div>
-                    <strong>{{ $post->user->name }}</strong><br>
+                    <div class="author-name">{{ $post->user->name }}</div>
                     <span class="comment-meta">{{ '@' . ($post->user->username ?? 'unknown') }}</span>
                 </div>
-            </div>
-            <div class="comment-meta">
+            </a>
+
+            <div class="comment-meta" style="margin-top: 10px;">
                 🗓️ {{ $post->created_at->format('F j, Y') }}
             </div>
         </div>
+
+
+        @if ($post->picture)
+            <div class="post-image">
+                <img src="{{ asset('storage/' . $post->picture) }}" alt="Post Image">
+            </div>
+        @endif
 
         <!-- Post Content -->
         <div class="post-body">
@@ -472,8 +535,8 @@
                 <i class="fas fa-thumbs-up"></i>
                 <span class="reaction-count" id="likes-{{ $post->id }}">0</span>
             </button>
-            <button id="dislike-btn-{{ $post->id }}" class="reaction-btn" onclick="handleReact({{ $post->id }}, 0)"
-                aria-label="Dislike this post">
+            <button id="dislike-btn-{{ $post->id }}" class="reaction-btn"
+                onclick="handleReact({{ $post->id }}, 0)" aria-label="Dislike this post">
                 <i class="fas fa-thumbs-down"></i>
                 <span class="reaction-count" id="dislikes-{{ $post->id }}">0</span>
             </button>
@@ -489,22 +552,27 @@
             <div id="comment-section-{{ $post->id }}" class="comment-container">
                 <!-- Comment Input Area -->
                 <div class="comment-input-area">
-                    @if($auth)
-                    <div class="user-avatar">
-                        <img src="https://avatar.vercel.sh/{{ urlencode(Auth::user()->name) }}.svg" alt="Avatar">
-                    </div>
-                    <div class="comment-input-wrapper">
-                        <textarea id="commentInput" rows="3" placeholder="Add a public comment..." aria-label="Add a comment" maxlength="500"></textarea>
-                        <div class="comment-input-footer">
-                            <span id="comment-char-count" class="comment-meta">0/500</span>
-                            <div class="comment-input-buttons" style="display: none;" id="comment-input-buttons">
-                                <button class="action-btn outline" onclick="cancelComment()">Cancel</button>
-                                <button class="action-btn" onclick="handleCommentSubmit({{ $post->id }})">Comment</button>
+                    @if ($auth)
+                        <div class="user-avatar">
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
+                                style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; object-position: center;"
+                                alt="Avatar">
+                        </div>
+                        <div class="comment-input-wrapper">
+                            <textarea id="commentInput" rows="3" placeholder="Add a public comment..." aria-label="Add a comment"
+                                maxlength="500"></textarea>
+                            <div class="comment-input-footer">
+                                <span id="comment-char-count" class="comment-meta">0/500</span>
+                                <div class="comment-input-buttons" style="display: none;" id="comment-input-buttons">
+                                    <button class="action-btn outline" onclick="cancelComment()">Cancel</button>
+                                    <button class="action-btn"
+                                        onclick="handleCommentSubmit({{ $post->id }})">Comment</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     @else
-                    <p style="color: #6c757d;">Please <a href="{{route('login.page')}}" class="action-btn outline">log in</a> to comment.</p>
+                        <p style="color: #6c757d;">Please <a href="{{ route('login.page') }}"
+                                class="action-btn outline">log in</a> to comment.</p>
                     @endif
                 </div>
 
@@ -524,11 +592,12 @@
         </div>
 
         <!-- Back Link -->
-        <a class="back-link" href="{{ url('/') }}">← Back to Home</a>
+        {{-- <a class="back-link" href="{{ url('/') }}">← Back to Home</a> --}}
     </div>
 
     <script>
-        const url = 'http://127.0.0.1:8000'; // Change in production
+        // const url = 'http://127.0.0.1:8000'; // Change in production
+        const url = 'https://full-drake-sound.ngrok-free.app';
         const token = localStorage.getItem('token');
         const isLoggedIn = @json($auth);
 
@@ -578,31 +647,31 @@
 
             document.getElementById('loading-comments').style.display = 'block';
             fetch(`${url}/api/post/comment`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    post_id: postId,
-                    comment: commentData
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        comment: commentData
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('loading-comments').style.display = 'none';
-                if (data.status) {
-                    cancelComment();
-                    fetchComments(postId);
-                } else {
-                    alert('Something went wrong while saving your comment.');
-                }
-            })
-            .catch(err => {
-                document.getElementById('loading-comments').style.display = 'none';
-                console.error(err);
-                alert('Something went wrong.');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading-comments').style.display = 'none';
+                    if (data.status) {
+                        cancelComment();
+                        fetchComments(postId);
+                    } else {
+                        alert('Something went wrong while saving your comment.');
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('loading-comments').style.display = 'none';
+                    console.error(err);
+                    alert('Something went wrong.');
+                });
         }
 
         function handleReact(postId, reaction) {
@@ -612,32 +681,34 @@
             }
 
             fetch(`${url}/api/posts/${postId}/react`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ reaction })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status) updateReactionCount(postId);
-            })
-            .catch(err => console.error('React Error:', err));
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        reaction
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status) updateReactionCount(postId);
+                })
+                .catch(err => console.error('React Error:', err));
         }
 
         function updateReactionCount(postId) {
             fetch(`${url}/api/posts/${postId}/reactions`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById(`likes-${postId}`).innerText = data.likes;
-                document.getElementById(`dislikes-${postId}`).innerText = data.dislikes;
-                updateActiveButtons(postId, data.userReaction);
-            });
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById(`likes-${postId}`).innerText = data.likes;
+                    document.getElementById(`dislikes-${postId}`).innerText = data.dislikes;
+                    updateActiveButtons(postId, data.userReaction);
+                });
         }
 
         function updateActiveButtons(postId, reaction) {
@@ -655,43 +726,43 @@
 
         function loadReactionCountsForVisitor(postId) {
             fetch(`${url}/api/public/post/reaction/${postId}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status) {
-                    document.getElementById(`likes-${postId}`).innerText = data.likes;
-                    document.getElementById(`dislikes-${postId}`).innerText = data.dislikes;
-                }
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status) {
+                        document.getElementById(`likes-${postId}`).innerText = data.likes;
+                        document.getElementById(`dislikes-${postId}`).innerText = data.dislikes;
+                    }
+                });
         }
 
         function fetchComments(postId) {
             const sortBy = document.getElementById('sort-comments')?.value || 'newest';
             document.getElementById('loading-comments').style.display = 'block';
             fetch(`${url}/api/public/post/comment/${postId}?sort=${sortBy}`, {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading-comments').style.display = 'none';
-                const listEl = document.getElementById(`comments-list-${postId}`);
-                const countEl = document.getElementById(`comment-count-${postId}`);
+                    method: 'GET'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-comments').style.display = 'none';
+                    const listEl = document.getElementById(`comments-list-${postId}`);
+                    const countEl = document.getElementById(`comment-count-${postId}`);
 
-                if (data.status && Array.isArray(data.comments)) {
-                    countEl.innerText = data.comments.length;
-                    listEl.innerHTML = '';
+                    if (data.status && Array.isArray(data.comments)) {
+                        countEl.innerText = data.comments.length;
+                        listEl.innerHTML = '';
 
-                    // Group comments by parent_id for threading
-                    const commentTree = buildCommentTree(data.comments);
-                    renderComments(commentTree, listEl, postId);
-                } else {
-                    listEl.innerHTML = `<div style="color: #6c757d;">No comments yet.</div>`;
-                    countEl.innerText = 0;
-                }
-            })
-            .catch(error => {
-                document.getElementById('loading-comments').style.display = 'none';
-                console.error('Error fetching comments:', error);
-            });
+                        // Group comments by parent_id for threading
+                        const commentTree = buildCommentTree(data.comments);
+                        renderComments(commentTree, listEl, postId);
+                    } else {
+                        listEl.innerHTML = `<div style="color: #6c757d;">No comments yet.</div>`;
+                        countEl.innerText = 0;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loading-comments').style.display = 'none';
+                    console.error('Error fetching comments:', error);
+                });
         }
 
         function buildCommentTree(comments) {
@@ -727,9 +798,13 @@
 
                 commentItem.innerHTML = `
                     <div class="comment-header">
-                        <img src="{{ Auth::user()->avatar ?? 'https://avatar.vercel.sh/' }}" alt="Your Avatar">
+                        <img src="/storage/${comment.user?.avatar ?? 'default.png'}"
+                            alt="Avatar"
+                            style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; object-position: center;">
+
                         <div>
-                            <strong>@${comment.user?.username ?? 'guest'}</strong>
+                            <a href="{{ url('/user/profile') }}/${comment.user?.id}" style="color: var(--accent-color); font-weight: bold;">
+                            ${comment.user?.username ?? 'guest'}</a>
                             <div class="comment-meta">${new Date(comment.created_at).toLocaleString()}</div>
                         </div>
                     </div>
@@ -741,7 +816,7 @@
                     </div>
                     <div class="reply-form" id="reply-form-${comment.id}" style="display: none;">
                         <div class="user-avatar">
-                           <img src="https://avatar.vercel.sh/{{ urlencode($post->user->name) }}.svg" alt="Avatar">
+                           <img src="{{ Auth::check() ? asset('storage/' . Auth::user()->avatar) : asset('images/default-avatar.png') }}" alt="Avatar" style="width: 35px; height: 35px; border-radius: 50%;">
                         </div>
                         <div class="comment-input-wrapper">
                             <textarea rows="2" placeholder="Add a reply..." class="reply-input" id="reply-input-${comment.id}" maxlength="500" aria-label="Add a reply"></textarea>
@@ -752,10 +827,10 @@
                         </div>
                     </div>
                     ${hasReplies ? `
-                        <div class="reply-toggle" onclick="toggleReplies(${comment.id})" id="toggle-${comment.id}" aria-label="Toggle replies">
-                            Show ${comment.replies.length} repl${comment.replies.length > 1 ? 'ies' : 'y'}
-                        </div>
-                        <div id="${replyId}" style="display: none;"></div>
+                    <div class="reply-toggle" onclick="toggleReplies(${comment.id})" id="toggle-${comment.id}" aria-label="Toggle replies">
+                    Show ${comment.replies.length} repl${comment.replies.length > 1 ? 'ies' : 'y'}
+                    </div>
+                    <div id="${replyId}" style="display: none;"></div>
                     ` : ''}
                 `;
 
@@ -770,11 +845,10 @@
         }
 
         function toggleReplyForm(commentId) {
-            if(!isLoggedIn)
-        {   
-            alert("Oops! Please log in to reply.");
-            return;
-        }
+            if (!isLoggedIn) {
+                alert("Oops! Please log in to reply.");
+                return;
+            }
             const replyForm = document.getElementById(`reply-form-${commentId}`);
             replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
         }
@@ -795,32 +869,32 @@
 
             document.getElementById('loading-comments').style.display = 'block';
             fetch(`${url}/api/post/comment`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    post_id: postId,
-                    comment: replyData,
-                    parent_id: commentId
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        comment: replyData,
+                        parent_id: commentId
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('loading-comments').style.display = 'none';
-                if (data.status) {
-                    cancelReply(commentId);
-                    fetchComments(postId);
-                } else {
-                    alert('Something went wrong while saving your reply.');
-                }
-            })
-            .catch(err => {
-                document.getElementById('loading-comments').style.display = 'none';
-                console.error(err);
-                alert('Something went wrong.');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading-comments').style.display = 'none';
+                    if (data.status) {
+                        cancelReply(commentId);
+                        fetchComments(postId);
+                    } else {
+                        alert('Something went wrong while saving your reply.');
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('loading-comments').style.display = 'none';
+                    console.error(err);
+                    alert('Something went wrong.');
+                });
         }
 
         function toggleReplies(commentId) {
@@ -829,33 +903,33 @@
             const isHidden = replyContainer.style.display === 'none';
 
             replyContainer.style.display = isHidden ? 'block' : 'none';
-            toggleButton.textContent = isHidden
-                ? `Hide replies`
-                : `Show ${replyContainer.querySelectorAll('.comment-card').length} repl${replyContainer.querySelectorAll('.comment-card').length > 1 ? 'ies' : 'y'}`;
+            toggleButton.textContent = isHidden ?
+                `Hide replies` :
+                `Show ${replyContainer.querySelectorAll('.comment-card').length} repl${replyContainer.querySelectorAll('.comment-card').length > 1 ? 'ies' : 'y'}`;
         }
 
         function deleteComment(commentId, postId) {
             if (confirm('Are you sure you want to delete this comment?')) {
                 document.getElementById('loading-comments').style.display = 'block';
                 fetch(`${url}/api/post/comment/delete/${commentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('loading-comments').style.display = 'none';
-                    if (data.status) {
-                        fetchComments(postId);
-                    } else {
-                        alert('Something went wrong while deleting the comment.');
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('loading-comments').style.display = 'none';
-                    console.error('Delete Error:', err);
-                });
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('loading-comments').style.display = 'none';
+                        if (data.status) {
+                            fetchComments(postId);
+                        } else {
+                            alert('Something went wrong while deleting the comment.');
+                        }
+                    })
+                    .catch(err => {
+                        document.getElementById('loading-comments').style.display = 'none';
+                        console.error('Delete Error:', err);
+                    });
             }
         }
 
