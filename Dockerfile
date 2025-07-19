@@ -1,9 +1,11 @@
 FROM php:8.2-apache
 
-# System dependencies
+# System dependencies including GD
 RUN apt-get update && apt-get install -y \
     zip unzip git curl libpq-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring xml
+    libjpeg-dev libpng-dev libfreetype6-dev libwebp-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype --with-webp \
+    && docker-php-ext-install gd pdo pdo_pgsql pgsql mbstring xml
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
