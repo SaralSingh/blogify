@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers;
-
+use Intervention\Image\Facades\Image;
 use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\User;
@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
                 // Force HTTPS for all environments
         URL::forceScheme('https');
+        Image::configure(['driver' => 'imagick']);
 
         Gate::define('view-post',function(User $user, $post_id)
         {
