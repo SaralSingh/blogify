@@ -207,5 +207,5 @@
 </body>
 
 <!-- In your Blade file -->
-<script src="{{ asset('js/register.js') }}"></script>
+<script src="{{ secure_asset('js/register.js') }}"></script>
 </html>
