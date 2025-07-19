@@ -9,6 +9,26 @@ use App\Http\Middleware\User\GuestMiddleware;
 use App\Http\Middleware\User\UserMiddleware;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/run-artisan/{cmd}', function ($cmd) {
+    $allowed = [
+        'migrate' => 'migrate --force',
+        'config-cache' => 'config:cache',
+        'optimize-clear' => 'optimize:clear',
+        'storage-link' => 'storage:link',
+        'db-seed' => 'db:seed --force',
+    ];
+
+    if (!array_key_exists($cmd, $allowed)) {
+        abort(403, 'Command not allowed.');
+    }
+
+    Artisan::call($allowed[$cmd]);
+    return "✅ Artisan command <b>{$cmd}</b> executed.";
+});
+
+
 
 Route::post('otp', [EmailController::class, 'otpSender']);
 Route::get('/', [PageController::class, 'homePage'])->name('home.page');
