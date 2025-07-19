@@ -381,8 +381,7 @@
             let latestPostId = 0;
             let allPosts = [];
             let currentToastPostId = null;
-            let url = 'https://blogify-912d.onrender.com';
-            // let url = 'http://127.0.0.1::8000';
+           const url = "{{ config('app.url') }}";
 
             function showToast(title, author, postId) {
                 const content = `"${title}" by ${author}`;

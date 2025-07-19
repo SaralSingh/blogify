@@ -596,8 +596,7 @@
     </div>
 
     <script>
-        // const url = 'http://127.0.0.1:8000'; // Change in production
-        const url = 'https://blogify-912d.onrender.com';
+       const url = "{{ config('app.url') }}";
         const token = localStorage.getItem('token');
         const isLoggedIn = @json($auth);
 

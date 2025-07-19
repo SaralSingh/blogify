@@ -206,6 +206,9 @@
     </footer>
 </body>
 
+<script>
+    window.BASE_URL = "{{ config('app.url') }}";
+</script>
 <!-- In your Blade file -->
 <script src="{{ secure_asset('js/register.js') }}"></script>
 </html>
