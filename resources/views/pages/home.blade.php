@@ -426,7 +426,7 @@
                         day: 'numeric'
                     });
                     let imageUrl = post.picture ? `/storage/${post.picture}` :
-                        `/storage/images/posts/post-placeholder.jpg`;
+                        `/images/post-placeholder.jpg`;
 
                     container.innerHTML += `
                 <div class="post-card position-relative">
