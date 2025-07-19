@@ -26,9 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-            if (app()->environment('local')) {
-           URL::forceScheme('https');
-    }
+                // Force HTTPS for all environments
+        URL::forceScheme('https');
 
         Gate::define('view-post',function(User $user, $post_id)
         {
