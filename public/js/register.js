@@ -26,6 +26,7 @@ document.getElementById('get-otp').addEventListener('click', function () {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred. Please try again later.');
+        // alert('An error occurred. Please try again later.');
+        alert(`An error occurred. Please try again later.${error}`);
     });
 });
