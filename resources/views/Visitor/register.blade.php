@@ -160,24 +160,6 @@
                         @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label for="otp" class="block text-sm font-medium text-gray-700 mb-1">OTP</label>
-
-                        <div class="flex">
-                            <input type="text" name="otp" id="otp"
-                                class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Enter OTP">
-
-                            <button type="button" id="get-otp"
-                                class="px-4 py-3 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                Get OTP
-                            </button>
-                        </div>
-
-                        @error('otp')
-                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
                     <button type="submit"
                         class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-opacity duration-300 hover:opacity-90">
                         Register
