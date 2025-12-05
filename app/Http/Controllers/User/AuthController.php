@@ -53,7 +53,7 @@ class AuthController extends Controller
                 'avatar' => $path
             ]);
 
-            app(EmailController::class)->sendEmail($validated['email']);
+            // app(EmailController::class)->sendEmail($validated['email']);
             return redirect()->route('login.page')->with('success', 'Registration successful. Please login.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Something went wrong.'])->withInput();
