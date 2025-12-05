@@ -18,18 +18,18 @@ class AuthController extends Controller
 
     public function registerCheck(Request $request)
     {
-        $otp = $request->otp;
-        $email = $request->email;
+        // $otp = $request->otp;
+        // $email = $request->email;
 
-        if ($email != session('email')) {
-            return redirect()->back()->withErrors(['email' => 'Email does not match.'])->withInput();
-        }
+        // if ($email != session('email')) {
+        //     return redirect()->back()->withErrors(['email' => 'Email does not match.'])->withInput();
+        // }
 
-        if ($otp != session('otp')) {
-            return redirect()->back()->withErrors(['otp' => 'Invalid OTP.'])->withInput();
-        }
+        // if ($otp != session('otp')) {
+        //     return redirect()->back()->withErrors(['otp' => 'Invalid OTP.'])->withInput();
+        // }
 
-        session()->forget(['otp', 'email']);
+        // session()->forget(['otp', 'email']);
 
         $validated = $request->validate([
             'name' => 'required|string|max:100',
